@@ -49,8 +49,11 @@ class Controle {
         Sonda sonda = sondaRepo.findById(id)
             .orElseThrow(() -> new ProbeNotFoundException());
 
-        sonda.mover(comandos);
+        switch (sonda.mover(comandos)) {
+            case 1:
+                throw new InvalidCommandsException();
+        }
 
-        return sonda;
+        return sondaRepo.save(sonda);
     }
 }

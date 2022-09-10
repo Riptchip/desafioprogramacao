@@ -2,12 +2,17 @@ package br.com.elo7.desafioprogramacao;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Table(name = "planetas")
 @Entity
 class Planeta {
     
-    private @Id @GeneratedValue Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private int[] tamanho;
 
     Planeta() {}

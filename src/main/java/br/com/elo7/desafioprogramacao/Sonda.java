@@ -6,13 +6,18 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+@Table(name = "sondas")
 @Entity
 class Sonda {
 
-    private @Id @GeneratedValue Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private int[] posicao;
     @ManyToOne
     private Planeta planeta;
@@ -45,6 +50,7 @@ class Sonda {
     }
     
     public int mover(String comandos) {
+        int[] posicaoTemp = posicao;
         for (char c : comandos.toCharArray()) {
             switch (c) {
                 case 'M':
@@ -78,6 +84,7 @@ class Sonda {
                     break;
 
                 default:
+                    posicao = posicaoTemp;
                     return 1;
                 }
         }
