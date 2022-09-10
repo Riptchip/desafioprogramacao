@@ -1,5 +1,6 @@
 package br.com.elo7.desafioprogramacao;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,14 @@ class Controle {
             .orElseThrow(() -> new PlanetNotFoundException());
         }
 
+        int[] posicao = new int[]{x, y};
+        if (planeta.emExploracao(Arrays.toString(posicao))) {
+            throw new PlanetCoordsOccupedException("Não é possivel pousar no planeta" + planeta.getId() + " nas coordenadas x=" + posicao[0] + " e y=" + posicao[1] + ", pois já estão sendo ocupadas por outra sonda.");
+        } else {
+            planeta.novaExploracao(Arrays.toString(posicao));
+        }
+
+        planetaRepo.save(planeta);
         return sondaRepo.save(new Sonda(new int[]{x, y}, planeta, direcao));
     }
     
@@ -52,8 +61,19 @@ class Controle {
         switch (sonda.mover(comandos)) {
             case 1:
                 throw new InvalidCommandsException();
+            
+            case 2:
+                planetaRepo.save(sonda.getPlaneta());
+                sondaRepo.save(sonda);
+                throw new PlanetCoordsOccupedException("Não foi possivel movimentar sonda para o destino. Outra sonda estava bloqueando seu caminho quando chegou às coordenadas x=" + sonda.getPosicao()[0] + " e y=" + sonda.getPosicao()[1] + ", portanto parou ali apontando para" + sonda.getDirecao() + ".");
+
+            case 3:
+                planetaRepo.save(sonda.getPlaneta());
+                sondaRepo.save(sonda);
+                throw new OutOfPlanetException(sonda.getPosicao()[0], sonda.getPosicao()[1], sonda.getDirecao());
         }
 
+        planetaRepo.save(sonda.getPlaneta());
         return sondaRepo.save(sonda);
     }
 }

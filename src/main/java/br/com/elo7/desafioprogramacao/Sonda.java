@@ -34,15 +34,15 @@ class Sonda {
     }
 
     public Long getId() {
-        return this.id;
+        return id;
     }
     
     public int[] getPosicao() {
-        return this.posicao;
+        return posicao;
     }
 
     public Planeta getPlaneta() {
-        return this.planeta;
+        return planeta;
     }
     
     public String getDirecao() {
@@ -50,10 +50,11 @@ class Sonda {
     }
     
     public int mover(String comandos) {
-        int[] posicaoTemp = posicao;
+        int[] posicaoTemp = posicao.clone();
         for (char c : comandos.toCharArray()) {
             switch (c) {
                 case 'M':
+                    int [] posicaoTemp2 = posicao.clone();
                     switch (direcao) {
                         case 0:
                             posicao[1]--;
@@ -71,6 +72,17 @@ class Sonda {
                             posicao[0]--;
                             break;
                     }
+
+                    if (planeta.emExploracao(Arrays.toString(posicao))) {
+                        posicao = posicaoTemp2;
+                        atualizarPosicao(posicao, posicaoTemp);
+                        return 2;
+                    } else if (posicao[0] < 0 || posicao[0] >= planeta.getTamanho()[0] || posicao[1] < 0 || posicao[1] >= planeta.getTamanho()[1]) {
+                        posicao = posicaoTemp2;
+                        atualizarPosicao(posicao, posicaoTemp);
+                        return 3;
+                    }
+                    
                     break;
                 
                 case 'L':
@@ -88,7 +100,14 @@ class Sonda {
                     return 1;
                 }
         }
-        
+
+        atualizarPosicao(posicao, posicaoTemp);
+
         return 0;
+    }
+
+    private void atualizarPosicao(int[] atual, int[] anterior) {
+        planeta.novaExploracao(Arrays.toString(atual));
+        planeta.finalizarExploracao(Arrays.toString(anterior));
     }
 }
